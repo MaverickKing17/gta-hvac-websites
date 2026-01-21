@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Phone, Calendar } from 'lucide-react';
+import { Menu, X, Phone, Calendar, ChevronRight } from 'lucide-react';
 import { COMPANY_CONFIG } from '../constants';
 
 const Header: React.FC = () => {
@@ -9,7 +9,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -24,69 +24,128 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+    <header 
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out ${
+        isScrolled 
+          ? 'bg-white/70 backdrop-blur-xl shadow-sm border-b border-slate-200/60 py-3' 
+          : 'bg-transparent py-6'
+      }`}
+    >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+        {/* Logo Section */}
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <div className={`transition-all duration-500 rounded-xl flex items-center justify-center text-white font-bold transform group-hover:rotate-6 ${
+            isScrolled ? 'w-9 h-9 bg-blue-600 text-lg' : 'w-11 h-11 bg-blue-600 text-xl'
+          }`}>
             OHC
           </div>
-          <span className="font-bold text-lg md:text-xl hidden sm:block">Ontario Heating & Cooling</span>
+          <div className="flex flex-col">
+            <span className={`font-extrabold transition-all duration-500 leading-none ${
+              isScrolled ? 'text-base md:text-lg text-slate-900' : 'text-lg md:text-xl text-slate-900'
+            }`}>
+              Ontario <span className="text-blue-600">HVAC</span>
+            </span>
+            {!isScrolled && (
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 hidden sm:block">
+                Reliable Since 2005
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
+        <nav className="hidden lg:flex items-center gap-10">
+          <ul className="flex items-center gap-8">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <a 
+                  href={link.href}
+                  className={`text-sm font-bold transition-all duration-300 relative group py-2 ${
+                    isScrolled ? 'text-slate-600 hover:text-blue-600' : 'text-slate-700 hover:text-blue-600'
+                  }`}
+                >
+                  {link.name}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          
+          <div className="flex items-center gap-3 pl-4 border-l border-slate-200/50">
             <a 
-              key={link.name} 
-              href={link.href}
-              className="text-sm font-medium text-slate-700 hover:text-blue-600 transition-colors"
+              href={`tel:${COMPANY_CONFIG.phone}`}
+              className={`flex items-center gap-2 px-5 transition-all duration-300 font-bold ${
+                isScrolled ? 'text-blue-600 text-sm' : 'text-slate-800 text-base'
+              }`}
             >
-              {link.name}
+              <Phone className={isScrolled ? 'w-4 h-4' : 'w-5 h-5'} />
+              {COMPANY_CONFIG.phone}
             </a>
-          ))}
-          <a 
-            href={`tel:${COMPANY_CONFIG.phone}`}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-md shadow-blue-200"
-          >
-            <Phone className="w-4 h-4" />
-            {COMPANY_CONFIG.phone}
-          </a>
+            <button className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all active:scale-95 group">
+              Book Online
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
         </nav>
 
         {/* Mobile Toggle */}
-        <button 
-          className="lg:hidden p-2 text-slate-800"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="flex items-center gap-4 lg:hidden">
+           <a 
+              href={`tel:${COMPANY_CONFIG.phone}`}
+              className="p-2 bg-blue-50 text-blue-600 rounded-lg"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
+          <button 
+            className="p-2 text-slate-800 bg-white shadow-sm rounded-lg border border-slate-100"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden bg-white absolute top-full left-0 right-0 shadow-xl border-t border-gray-100 flex flex-col p-4 gap-4 animate-in slide-in-from-top">
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href}
-              onClick={() => setIsMenuOpen(false)}
-              className="py-3 text-lg font-medium text-slate-800 border-b border-gray-50 last:border-0"
-            >
-              {link.name}
-            </a>
-          ))}
-          <div className="flex flex-col gap-3 mt-4">
-            <a href={`tel:${COMPANY_CONFIG.phone}`} className="flex items-center justify-center gap-2 py-4 bg-blue-600 text-white rounded-xl font-bold">
-              <Phone className="w-5 h-5" />
-              Call Now
-            </a>
-            <button className="flex items-center justify-center gap-2 py-4 bg-slate-100 text-slate-800 rounded-xl font-bold">
-              <Calendar className="w-5 h-5" />
-              Book Online
+      {/* Mobile Menu Overlay */}
+      <div 
+        className={`lg:hidden fixed inset-0 top-[inherit] bg-white/95 backdrop-blur-2xl z-[90] transition-all duration-500 ease-in-out transform ${
+          isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+        }`}
+        style={{ top: isScrolled ? '61px' : '92px', height: 'calc(100vh - 61px)' }}
+      >
+        <div className="flex flex-col p-6 h-full">
+          <div className="space-y-1">
+            {navLinks.map((link, idx) => (
+              <a 
+                key={link.name} 
+                href={link.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between py-5 text-xl font-extrabold text-slate-800 border-b border-slate-100 group animate-in slide-in-from-right"
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                {link.name}
+                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600 transition-colors" />
+              </a>
+            ))}
+          </div>
+          
+          <div className="mt-auto pb-10 space-y-4">
+            <div className="p-6 bg-blue-50 rounded-[32px] border border-blue-100">
+              <p className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3">Emergency Support</p>
+              <a href={`tel:${COMPANY_CONFIG.phone}`} className="flex items-center gap-4 text-2xl font-black text-slate-900">
+                <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center">
+                  <Phone className="w-6 h-6" />
+                </div>
+                {COMPANY_CONFIG.phone}
+              </a>
+            </div>
+            <button className="w-full flex items-center justify-center gap-3 py-5 bg-slate-900 text-white rounded-[24px] font-bold text-lg shadow-xl shadow-slate-200">
+              <Calendar className="w-6 h-6" />
+              Schedule Visit
             </button>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 };
