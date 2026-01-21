@@ -10,6 +10,7 @@ import ContactForm from './components/ContactForm';
 import AppointmentBookingForm from './components/AppointmentBookingForm';
 import StickyCTA from './components/StickyCTA';
 import Footer from './components/Footer';
+import TawkMessenger from './components/TawkMessenger';
 
 const App: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -27,6 +28,9 @@ const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen flex flex-col">
+      {/* Tawk.to Integration */}
+      <TawkMessenger />
+
       <Header onOpenBooking={openBooking} />
       
       <main className="flex-grow">
@@ -46,7 +50,7 @@ const App: React.FC = () => {
       {showScrollTop && (
         <button 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 right-6 p-3 bg-white shadow-lg rounded-full text-blue-600 border border-blue-100 hover:bg-blue-50 transition-all z-40 hidden md:block"
+          className="fixed bottom-24 right-20 p-3 bg-white shadow-lg rounded-full text-blue-600 border border-blue-100 hover:bg-blue-50 transition-all z-40 hidden md:block"
           aria-label="Scroll to top"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
