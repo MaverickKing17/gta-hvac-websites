@@ -8,14 +8,12 @@ import Timeline from './components/Timeline';
 import TrustSignals from './components/TrustSignals';
 import ContactForm from './components/ContactForm';
 import AppointmentBookingForm from './components/AppointmentBookingForm';
-import AIChatWidget from './components/AIChatWidget';
 import StickyCTA from './components/StickyCTA';
 import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,7 +41,6 @@ const App: React.FC = () => {
       <Footer />
       
       <StickyCTA />
-      <AIChatWidget isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
       <AppointmentBookingForm isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
       {showScrollTop && (
