@@ -36,6 +36,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
     { name: 'Contact', href: '#contact' },
   ];
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out ${
@@ -46,7 +50,12 @@ const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
         {/* Logo Section */}
-        <div className="flex items-center gap-3 group cursor-pointer">
+        <div 
+          className="flex items-center gap-3 group cursor-pointer" 
+          onClick={scrollToTop}
+          role="button"
+          aria-label="Back to top"
+        >
           <div className={`transition-all duration-500 rounded-xl flex items-center justify-center text-white font-bold transform group-hover:rotate-6 ${
             isScrolled ? 'w-9 h-9 bg-blue-600 text-lg' : 'w-11 h-11 bg-blue-600 text-xl'
           }`}>
@@ -109,6 +118,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
            <a 
               href={`tel:${COMPANY_CONFIG.phone}`}
               className="p-2 bg-blue-50 text-blue-600 rounded-lg active:scale-90 transition-transform"
+              aria-label="Call Now"
             >
               <Phone className="w-5 h-5" />
             </a>

@@ -43,6 +43,10 @@ const Services: React.FC<ServicesProps> = ({ onOpenBooking }) => {
               )}
               
               <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenBooking();
+                }}
                 className="flex items-center gap-2 text-blue-600 font-bold text-sm hover:gap-3 transition-all"
               >
                 Book Now
