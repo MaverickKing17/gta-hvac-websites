@@ -25,15 +25,49 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  // Focus management when modal opens
+  // Focus management when modal opens and Escape key listener
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      
+      // Simple Focus Trap
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) { // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else { // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
     if (isOpen) {
-      // Focus the close button when the modal opens for screen readers to have an immediate anchor
-      closeButtonRef.current?.focus();
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus the close button when the modal opens
+      setTimeout(() => closeButtonRef.current?.focus(), 100);
+      // Prevent scrolling of background
+      document.body.style.overflow = 'hidden';
     } else {
-      setStep(1); // Reset step when closing
+      setStep(1);
+      document.body.style.overflow = 'auto';
     }
-  }, [isOpen]);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen, onClose]);
 
   // Focus management when step changes
   useEffect(() => {
@@ -94,7 +128,7 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
           <button 
             ref={closeButtonRef}
             onClick={onClose}
-            className="p-2 hover:bg-white rounded-full transition-colors text-slate-400 hover:text-slate-900"
+            className="p-2 hover:bg-white rounded-full transition-colors text-slate-400 hover:text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             aria-label="Close booking form"
           >
             <X className="w-6 h-6" />
@@ -102,27 +136,29 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
         </div>
 
         {/* Scrollable Body */}
-        <div className="flex-grow overflow-y-auto p-8" aria-live="polite">
+        <div className="flex-grow overflow-y-auto p-8">
           {step === 1 && (
-            <div className="animate-in slide-in-from-right-4 duration-300">
+            <div className="animate-in slide-in-from-right-4 duration-300" role="group" aria-labelledby="step1-heading">
               <h4 
+                id="step1-heading"
                 ref={stepHeadingRef}
                 tabIndex={-1} 
                 className="text-xs font-black text-blue-600 uppercase tracking-widest mb-6 focus:outline-none"
               >
                 Step 1: Select Service
               </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" role="group" aria-label="Available Services">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {SERVICES.map((service) => (
                   <button
                     key={service.id}
                     onClick={() => handleServiceSelect(service.id)}
-                    className={`p-6 rounded-3xl border-2 text-left transition-all group ${
+                    className={`p-6 rounded-3xl border-2 text-left transition-all group focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                       formData.serviceId === service.id 
                         ? 'border-blue-600 bg-blue-50/50' 
                         : 'border-slate-100 bg-slate-50 hover:border-blue-200 hover:bg-white'
                     }`}
                     aria-pressed={formData.serviceId === service.id}
+                    aria-label={`Select ${service.title}`}
                   >
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
                       formData.serviceId === service.id ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 shadow-sm'
@@ -138,149 +174,159 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
           )}
 
           {step === 2 && (
-            <form onSubmit={handleSubmit} className="animate-in slide-in-from-right-4 duration-300 space-y-8">
-              <h4 
-                ref={stepHeadingRef}
-                tabIndex={-1}
-                className="text-xs font-black text-blue-600 uppercase tracking-widest mb-6 focus:outline-none"
-              >
-                Step 2: Details & Schedule
-              </h4>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label htmlFor="book-date" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                    <Calendar className="w-3 h-3" aria-hidden="true" /> Preferred Date
-                  </label>
-                  <input 
-                    id="book-date"
-                    type="date" 
-                    name="date"
-                    required
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                  />
+            <form onSubmit={handleSubmit} className="animate-in slide-in-from-right-4 duration-300 space-y-8" noValidate={false}>
+              <fieldset>
+                <legend className="sr-only">Step 2: Details & Schedule</legend>
+                <h4 
+                  ref={stepHeadingRef}
+                  tabIndex={-1}
+                  className="text-xs font-black text-blue-600 uppercase tracking-widest mb-6 focus:outline-none"
+                  id="step2-heading"
+                >
+                  Step 2: Details & Schedule
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="space-y-2">
+                    <label htmlFor="book-date" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                      <Calendar className="w-3 h-3" aria-hidden="true" /> Preferred Date
+                    </label>
+                    <input 
+                      id="book-date"
+                      type="date" 
+                      name="date"
+                      required
+                      aria-required="true"
+                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
+                      value={formData.date}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="book-time" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                      <Clock className="w-3 h-3" aria-hidden="true" /> Preferred Time Slot
+                    </label>
+                    <select 
+                      id="book-time"
+                      name="time"
+                      required
+                      aria-required="true"
+                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium appearance-none"
+                      value={formData.time}
+                      onChange={handleInputChange}
+                      aria-label="Select preferred time slot window"
+                    >
+                      <option value="">Choose a window</option>
+                      <option value="morning">Morning (8 AM - 12 PM)</option>
+                      <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                      <option value="evening">Evening (4 PM - 8 PM)</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <label htmlFor="book-time" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                    <Clock className="w-3 h-3" aria-hidden="true" /> Preferred Time Slot
-                  </label>
-                  <select 
-                    id="book-time"
-                    name="time"
-                    required
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium appearance-none"
-                    value={formData.time}
-                    onChange={handleInputChange}
-                    aria-label="Select preferred time slot"
+
+                <div className="space-y-6 pt-4 border-t border-slate-100">
+                  <div className="space-y-2">
+                    <label htmlFor="book-name" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                      <User className="w-3 h-3" aria-hidden="true" /> Full Name
+                    </label>
+                    <input 
+                      id="book-name"
+                      type="text" 
+                      name="name"
+                      required
+                      aria-required="true"
+                      placeholder="Jane Doe"
+                      autoComplete="name"
+                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label htmlFor="book-phone" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                        <Phone className="w-3 h-3" aria-hidden="true" /> Phone Number
+                      </label>
+                      <input 
+                        id="book-phone"
+                        type="tel" 
+                        name="phone"
+                        required
+                        aria-required="true"
+                        placeholder="416-555-0123"
+                        autoComplete="tel"
+                        className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="book-email" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                        <Mail className="w-3 h-3" aria-hidden="true" /> Email Address
+                      </label>
+                      <input 
+                        id="book-email"
+                        type="email" 
+                        name="email"
+                        required
+                        aria-required="true"
+                        placeholder="jane@example.com"
+                        autoComplete="email"
+                        className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="book-notes" className="text-xs font-bold text-slate-500 uppercase">Additional Notes (Optional)</label>
+                    <textarea 
+                      id="book-notes"
+                      name="notes"
+                      rows={2}
+                      placeholder="Tell us about the issue or special requests..."
+                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium resize-none"
+                      value={formData.notes}
+                      onChange={handleInputChange}
+                      aria-label="Additional details for the appointment booking"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="px-8 py-4 text-slate-500 font-bold hover:text-slate-900 transition-colors focus:ring-2 focus:ring-slate-300 focus:outline-none rounded-2xl"
+                    aria-label="Go back to service selection"
                   >
-                    <option value="">Choose a window</option>
-                    <option value="morning">Morning (8 AM - 12 PM)</option>
-                    <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
-                    <option value="evening">Evening (4 PM - 8 PM)</option>
-                  </select>
+                    Back
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-grow py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3 disabled:opacity-70 group focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    aria-label={isSubmitting ? "Processing booking" : "Confirm appointment booking"}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                        <span>Scheduling...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Confirm Booking</span>
+                        <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                      </>
+                    )}
+                  </button>
                 </div>
-              </div>
-
-              <div className="space-y-6 pt-4 border-t border-slate-100">
-                <div className="space-y-2">
-                  <label htmlFor="book-name" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                    <User className="w-3 h-3" aria-hidden="true" /> Full Name
-                  </label>
-                  <input 
-                    id="book-name"
-                    type="text" 
-                    name="name"
-                    required
-                    placeholder="Jane Doe"
-                    autoComplete="name"
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="book-phone" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                      <Phone className="w-3 h-3" aria-hidden="true" /> Phone Number
-                    </label>
-                    <input 
-                      id="book-phone"
-                      type="tel" 
-                      name="phone"
-                      required
-                      placeholder="416-555-0123"
-                      autoComplete="tel"
-                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="book-email" className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                      <Mail className="w-3 h-3" aria-hidden="true" /> Email Address
-                    </label>
-                    <input 
-                      id="book-email"
-                      type="email" 
-                      name="email"
-                      required
-                      placeholder="jane@example.com"
-                      autoComplete="email"
-                      className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="book-notes" className="text-xs font-bold text-slate-500 uppercase">Additional Notes (Optional)</label>
-                  <textarea 
-                    id="book-notes"
-                    name="notes"
-                    rows={2}
-                    placeholder="Tell us about the issue or special requests..."
-                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium resize-none"
-                    value={formData.notes}
-                    onChange={handleInputChange}
-                    aria-label="Additional details for the appointment"
-                  ></textarea>
-                </div>
-              </div>
-
-              <div className="flex gap-4 pt-4">
-                <button 
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="px-8 py-4 text-slate-500 font-bold hover:text-slate-900 transition-colors"
-                  aria-label="Go back to service selection"
-                >
-                  Back
-                </button>
-                <button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-grow py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3 disabled:opacity-70 group"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                      <span>Scheduling Appointment...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Confirm Booking</span>
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-                    </>
-                  )}
-                </button>
-              </div>
+              </fieldset>
             </form>
           )}
 
           {step === 3 && (
-            <div className="py-12 flex flex-col items-center text-center animate-in zoom-in-95 duration-500" role="status">
+            <div className="py-12 flex flex-col items-center text-center animate-in zoom-in-95 duration-500" role="status" aria-live="polite">
               <div 
                 ref={stepHeadingRef}
                 tabIndex={-1}
@@ -293,7 +339,7 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
               <p className="text-slate-600 max-w-sm mb-10 leading-relaxed">
                 Thank you, {formData.name}. Your appointment for {SERVICES.find(s => s.id === formData.serviceId)?.title} has been scheduled. One of our technicians will call to confirm the details.
               </p>
-              <div className="w-full p-6 bg-slate-50 rounded-[32px] border border-slate-100 text-left space-y-3 mb-10" aria-label="Appointment summary">
+              <div className="w-full p-6 bg-slate-50 rounded-[32px] border border-slate-100 text-left space-y-3 mb-10" aria-label="Appointment confirmation summary">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Date</span>
                   <span className="text-slate-900 font-black">{formData.date}</span>
@@ -309,8 +355,8 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
               </div>
               <button 
                 onClick={onClose}
-                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all"
-                aria-label="Close confirmation and exit"
+                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all focus:ring-2 focus:ring-slate-500 focus:outline-none"
+                aria-label="Close confirmation and finish"
               >
                 Close Window
               </button>
@@ -320,7 +366,7 @@ const AppointmentBookingForm: React.FC<AppointmentBookingFormProps> = ({ isOpen,
 
         {/* Footer/Progress */}
         {step < 3 && (
-          <div className="px-8 py-4 bg-white border-t border-slate-50 flex items-center gap-2" role="progressbar" aria-valuemin={1} aria-valuemax={2} aria-valuenow={step}>
+          <div className="px-8 py-4 bg-white border-t border-slate-50 flex items-center gap-2" role="progressbar" aria-valuemin={1} aria-valuemax={2} aria-valuenow={step} aria-label={`Booking progress: Step ${step} of 2`}>
             <div className={`h-1.5 flex-grow rounded-full transition-all duration-500 ${step >= 1 ? 'bg-blue-600' : 'bg-slate-100'}`} aria-label="Step 1 completed"></div>
             <div className={`h-1.5 flex-grow rounded-full transition-all duration-500 ${step >= 2 ? 'bg-blue-600' : 'bg-slate-100'}`} aria-label="Step 2 completed"></div>
           </div>

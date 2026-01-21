@@ -58,7 +58,7 @@ const ContactForm: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Call Us 24/7</p>
-                  <a href={`tel:${COMPANY_CONFIG.phone}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Call us at ${COMPANY_CONFIG.phone}`}>
+                  <a href={`tel:${COMPANY_CONFIG.phone}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Call OHC at ${COMPANY_CONFIG.phone}`}>
                     {COMPANY_CONFIG.phone}
                   </a>
                 </div>
@@ -69,7 +69,7 @@ const ContactForm: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email Us</p>
-                  <a href={`mailto:${COMPANY_CONFIG.email}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Email us at ${COMPANY_CONFIG.email}`}>
+                  <a href={`mailto:${COMPANY_CONFIG.email}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Email OHC at ${COMPANY_CONFIG.email}`}>
                     {COMPANY_CONFIG.email}
                   </a>
                 </div>
@@ -110,7 +110,7 @@ const ContactForm: React.FC = () => {
 
           <div className="glass p-10 rounded-[40px] shadow-2xl border border-white" aria-live="polite">
             {status === 'success' ? (
-              <div className="h-full flex flex-col items-center justify-center text-center py-20 space-y-6" role="status">
+              <div className="h-full flex flex-col items-center justify-center text-center py-20 space-y-6" role="status" aria-atomic="true">
                 <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6" aria-hidden="true">
                   <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -131,6 +131,7 @@ const ContactForm: React.FC = () => {
                 onSubmit={handleSubmit} 
                 className="space-y-6" 
                 aria-busy={status === 'submitting'}
+                noValidate={false}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
@@ -140,6 +141,7 @@ const ContactForm: React.FC = () => {
                       type="text" 
                       name="name"
                       required
+                      aria-required="true"
                       placeholder="Jane Doe"
                       autoComplete="name"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -152,6 +154,7 @@ const ContactForm: React.FC = () => {
                       type="tel" 
                       name="phone"
                       required
+                      aria-required="true"
                       placeholder="416-555-0123"
                       autoComplete="tel"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -166,6 +169,7 @@ const ContactForm: React.FC = () => {
                     type="email" 
                     name="email"
                     required
+                    aria-required="true"
                     placeholder="jane@example.com"
                     autoComplete="email"
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -179,6 +183,7 @@ const ContactForm: React.FC = () => {
                     name="service" 
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
                     aria-label="Select the HVAC service you require"
+                    required
                   >
                     <option value="heat-pump">Heat Pump Installation</option>
                     <option value="furnace-repair">Furnace Repair</option>
@@ -196,7 +201,7 @@ const ContactForm: React.FC = () => {
                     rows={4}
                     placeholder="Describe your needs..."
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                    aria-label="Your message or inquiry"
+                    aria-label="Your detailed message or inquiry"
                   ></textarea>
                 </div>
 
@@ -204,6 +209,7 @@ const ContactForm: React.FC = () => {
                   type="submit" 
                   disabled={status === 'submitting'}
                   className="w-full py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3 disabled:opacity-70 group"
+                  aria-label={status === 'submitting' ? "Submitting quote request" : "Request a free quote"}
                 >
                   {status === 'submitting' ? (
                     <>
