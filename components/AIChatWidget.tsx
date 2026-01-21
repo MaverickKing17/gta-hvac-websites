@@ -3,8 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, Sparkles, HelpCircle } from 'lucide-react';
 import { FAQS, COMPANY_CONFIG } from '../constants';
 
-const AIChatWidget: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AIChatWidgetProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [chat, setChat] = useState<{ role: 'user' | 'ai'; text: string }[]>([
@@ -16,7 +20,7 @@ const AIChatWidget: React.FC = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [chat, isTyping]);
+  }, [chat, isTyping, isOpen]);
 
   const findFAQAnswer = (input: string) => {
     const lowercaseInput = input.toLowerCase();

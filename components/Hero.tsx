@@ -3,7 +3,11 @@ import React from 'react';
 import { ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { COMPANY_CONFIG } from '../constants';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  onOpenChat: () => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden mesh-bg">
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -30,7 +34,10 @@ const Hero: React.FC = () => {
                 Get Free Quote
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </a>
-              <button className="w-full sm:w-auto px-8 py-4 bg-white text-slate-800 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center gap-2">
+              <button 
+                onClick={onOpenChat}
+                className="w-full sm:w-auto px-8 py-4 bg-white text-slate-800 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center gap-2"
+              >
                 Start AI Chat
               </button>
             </div>

@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,7 +28,7 @@ const App: React.FC = () => {
       <Header />
       
       <main className="flex-grow">
-        <Hero />
+        <Hero onOpenChat={() => setIsChatOpen(true)} />
         <Services />
         <RebateCalculator />
         <Timeline />
@@ -38,7 +39,7 @@ const App: React.FC = () => {
       <Footer />
       
       <StickyCTA />
-      <AIChatWidget />
+      <AIChatWidget isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
 
       {showScrollTop && (
         <button 
