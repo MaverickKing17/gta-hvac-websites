@@ -44,13 +44,15 @@ const App: React.FC = () => {
 
       <Footer />
       
+      {/* Sticky CTA moved to ensure it doesn't block the chat bubble on mobile */}
       <StickyCTA />
+      
       <AppointmentBookingForm isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
       {showScrollTop && (
         <button 
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-24 right-20 p-3 bg-white shadow-lg rounded-full text-blue-600 border border-blue-100 hover:bg-blue-50 transition-all z-40 hidden md:block"
+          className="fixed bottom-24 right-24 p-3 bg-white shadow-lg rounded-full text-blue-600 border border-blue-100 hover:bg-blue-50 transition-all z-[40] hidden md:block"
           aria-label="Scroll to top"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,12 +1,24 @@
 
 import { useEffect } from 'react';
 
+declare global {
+  interface Window {
+    Tawk_API: any;
+    Tawk_LoadStart: Date;
+  }
+}
+
 const TawkMessenger = () => {
   useEffect(() => {
-    // Check if script is already present
+    // 1. Initialize global variables Tawk.to expects
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_LoadStart = new Date();
+
+    // 2. Check if script is already present to prevent duplicates
     const existingScript = document.getElementById('tawk-script');
     if (existingScript) return;
 
+    // 3. Create and inject the script
     const s1 = document.createElement("script");
     const s0 = document.getElementsByTagName("script")[0];
     
@@ -22,18 +34,12 @@ const TawkMessenger = () => {
       document.head.appendChild(s1);
     }
 
-    return () => {
-      // Optional: Cleanup if the component unmounts
-      // Tawk.to usually stays for the whole session, but cleaning up avoids duplicates in hot-reloading
-      const scriptToRemove = document.getElementById('tawk-script');
-      if (scriptToRemove) scriptToRemove.remove();
-      // Remove the widget from DOM manually if Tawk doesn't handle it
-      const widget = document.querySelector('.tawk-main-container');
-      if (widget) widget.remove();
-    };
+    // Note: We don't remove the script on unmount in an SPA context 
+    // to ensure the chat window persists across "page" navigations 
+    // without re-loading the entire third-party library.
   }, []);
 
-  return null; // This component doesn't render anything itself
+  return null;
 };
 
 export default TawkMessenger;
