@@ -1,15 +1,41 @@
 
 import React, { useState } from 'react';
-import { Send, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Send, Phone, Mail, MapPin, Clock, Loader2 } from 'lucide-react';
 import { COMPANY_CONFIG } from '../constants';
 
 const ContactForm: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('submitting');
-    setTimeout(() => setStatus('success'), 1500);
+    
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('https://formspree.io/f/mreedywr', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        form.reset();
+      } else {
+        const data = await response.json();
+        console.error('Formspree error:', data);
+        setStatus('idle');
+        alert('Oops! There was a problem submitting your form. Please try again or call us directly.');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setStatus('idle');
+      alert('Oops! There was a problem submitting your form. Please check your connection or call us directly.');
+    }
   };
 
   return (
@@ -106,6 +132,7 @@ const ContactForm: React.FC = () => {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
                     <input 
                       type="text" 
+                      name="name"
                       required
                       placeholder="Jane Doe"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -115,6 +142,7 @@ const ContactForm: React.FC = () => {
                     <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
                     <input 
                       type="tel" 
+                      name="phone"
                       required
                       placeholder="416-555-0123"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -126,6 +154,7 @@ const ContactForm: React.FC = () => {
                   <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
                   <input 
                     type="email" 
+                    name="email"
                     required
                     placeholder="jane@example.com"
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -134,18 +163,19 @@ const ContactForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Service Needed</label>
-                  <select className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
-                    <option>Heat Pump Installation</option>
-                    <option>Furnace Repair</option>
-                    <option>AC Installation</option>
-                    <option>Water Heater Service</option>
-                    <option>Emergency Repair</option>
+                  <select name="service" className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                    <option value="heat-pump">Heat Pump Installation</option>
+                    <option value="furnace-repair">Furnace Repair</option>
+                    <option value="ac-install">AC Installation</option>
+                    <option value="water-heater">Water Heater Service</option>
+                    <option value="emergency">Emergency Repair</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">How can we help?</label>
                   <textarea 
+                    name="message"
                     rows={4}
                     placeholder="Describe your needs..."
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
@@ -157,7 +187,12 @@ const ContactForm: React.FC = () => {
                   disabled={status === 'submitting'}
                   className="w-full py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3 disabled:opacity-70 group"
                 >
-                  {status === 'submitting' ? 'Processing...' : (
+                  {status === 'submitting' ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
                     <>
                       Request Free Quote
                       <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
