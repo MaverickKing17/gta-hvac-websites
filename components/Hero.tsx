@@ -1,14 +1,13 @@
 
 import React from 'react';
-import { ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Phone } from 'lucide-react';
 import { COMPANY_CONFIG } from '../constants';
 
 interface HeroProps {
-  onOpenChat: () => void;
   onOpenBooking: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ onOpenChat, onOpenBooking }) => {
+const Hero: React.FC<HeroProps> = ({ onOpenBooking }) => {
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden mesh-bg">
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -38,12 +37,13 @@ const Hero: React.FC<HeroProps> = ({ onOpenChat, onOpenBooking }) => {
                 Book Online Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button 
-                onClick={onOpenChat}
+              <a 
+                href={`tel:${COMPANY_CONFIG.phone}`}
                 className="w-full sm:w-auto px-8 py-4 bg-white text-slate-800 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center gap-2"
               >
-                Start AI Chat
-              </button>
+                <Phone className="w-5 h-5 text-blue-600" />
+                {COMPANY_CONFIG.phone}
+              </a>
             </div>
 
             <div className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-6">
