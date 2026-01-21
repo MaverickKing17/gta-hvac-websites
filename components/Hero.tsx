@@ -5,15 +5,19 @@ import { COMPANY_CONFIG } from '../constants';
 
 interface HeroProps {
   onOpenChat: () => void;
+  onOpenBooking: () => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
+const Hero: React.FC<HeroProps> = ({ onOpenChat, onOpenBooking }) => {
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden mesh-bg">
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           <div className="flex-1 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-6 animate-fade-in">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-6 animate-fade-in cursor-pointer hover:bg-blue-100 transition-colors"
+              onClick={onOpenBooking}
+            >
               <Sparkles className="w-4 h-4" />
               <span>Up to $10,500 in Heat Pump Rebates Available</span>
             </div>
@@ -27,13 +31,13 @@ const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-              <a 
-                href="#contact" 
+              <button 
+                onClick={onOpenBooking}
                 className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-200 group"
               >
-                Get Free Quote
+                Book Online Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </a>
+              </button>
               <button 
                 onClick={onOpenChat}
                 className="w-full sm:w-auto px-8 py-4 bg-white text-slate-800 rounded-2xl font-bold text-lg hover:bg-slate-50 transition-all border border-slate-200 flex items-center justify-center gap-2"

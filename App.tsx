@@ -25,14 +25,17 @@ const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const openBooking = () => setIsBookingOpen(true);
+  const openChat = () => setIsChatOpen(true);
+
   return (
     <div className="relative min-h-screen flex flex-col">
-      <Header onOpenBooking={() => setIsBookingOpen(true)} />
+      <Header onOpenBooking={openBooking} />
       
       <main className="flex-grow">
-        <Hero onOpenChat={() => setIsChatOpen(true)} />
-        <Services />
-        <RebateCalculator />
+        <Hero onOpenChat={openChat} onOpenBooking={openBooking} />
+        <Services onOpenBooking={openBooking} />
+        <RebateCalculator onOpenBooking={openBooking} />
         <Timeline />
         <TrustSignals />
         <ContactForm />

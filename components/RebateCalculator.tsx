@@ -20,7 +20,11 @@ interface RebateComparisonResult {
   disclaimer: string;
 }
 
-const RebateCalculator: React.FC = () => {
+interface RebateCalculatorProps {
+  onOpenBooking: () => void;
+}
+
+const RebateCalculator: React.FC<RebateCalculatorProps> = ({ onOpenBooking }) => {
   const [postalCode, setPostalCode] = useState('');
   const [homeSize, setHomeSize] = useState('2200');
   const [isCalculating, setIsCalculating] = useState(false);
@@ -208,8 +212,11 @@ const RebateCalculator: React.FC = () => {
                     The Ontario government is heavily incentivizing electrification in 2025.
                   </p>
                 </div>
-                <button className="shrink-0 w-full md:w-auto px-8 py-5 bg-white text-blue-600 rounded-2xl font-black text-lg hover:bg-blue-50 transition-all shadow-xl flex items-center justify-center gap-3">
-                  Apply Now
+                <button 
+                  onClick={onOpenBooking}
+                  className="shrink-0 w-full md:w-auto px-8 py-5 bg-white text-blue-600 rounded-2xl font-black text-lg hover:bg-blue-50 transition-all shadow-xl flex items-center justify-center gap-3"
+                >
+                  Claim Rebate Now
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
@@ -266,7 +273,10 @@ const RebateCalculator: React.FC = () => {
                       "{item.summary}"
                     </p>
 
-                    <button className="w-full py-4 rounded-2xl bg-slate-50 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-colors border border-slate-100">
+                    <button 
+                      onClick={onOpenBooking}
+                      className="w-full py-4 rounded-2xl bg-slate-50 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-colors border border-slate-100"
+                    >
                       View Eligibility
                     </button>
                   </div>
@@ -281,8 +291,11 @@ const RebateCalculator: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex gap-4 shrink-0">
-                  <button className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-white/50">
-                    Download Comparison (PDF)
+                  <button 
+                    onClick={() => window.print()}
+                    className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-white/50 transition-colors"
+                  >
+                    Print Comparison
                   </button>
                 </div>
               </div>
