@@ -64,8 +64,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenChat }) => {
             
             <div className="relative glass rounded-[40px] overflow-hidden shadow-2xl animate-float p-4">
               <img 
-                src="https://picsum.photos/800/600?random=1" 
-                alt="HVAC technician at work"
+                src="https://i.ibb.co/8LPS8TS7/qwen-image-2512-b-Replace-the-current.jpg" 
+                alt="OHC HVAC technician servicing equipment"
                 className="rounded-[30px] w-full h-auto object-cover"
               />
               <div className="absolute bottom-10 left-10 right-10 p-6 glass rounded-2xl shadow-xl">
