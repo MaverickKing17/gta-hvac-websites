@@ -45,11 +45,17 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
         - If someone asks for a quote or booking, guide them to use the "Book Online" button or provide the phone number.
       `;
 
-      // Build context from last few messages
-      const history = chat.slice(-4).map(m => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.text }]
-      }));
+      /**
+       * CRITICAL FIX: Gemini requires the conversation to start with a 'user' turn.
+       * Since our first message in the 'chat' state is an AI greeting, we must 
+       * skip it when sending history to the API.
+       */
+      const history = chat
+        .slice(1) // Skip the initial assistant greeting
+        .map(m => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: m.text }]
+        }));
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -62,21 +68,22 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
 
       const aiText = response.text || "I'm having a bit of trouble connecting. Please feel free to call us directly at " + COMPANY_CONFIG.phone;
 
-      // Ensure typing indicator shows for at least 1500ms for a "natural" feel
+      // Ensure typing indicator shows for at least 1000ms for a "natural" feel
       const elapsedTime = Date.now() - startTime;
-      const minDelay = 1500;
+      const minDelay = 1000;
       if (elapsedTime < minDelay) {
         await new Promise(resolve => setTimeout(resolve, minDelay - elapsedTime));
       }
 
       setChat(prev => [...prev, { role: 'ai', text: aiText }]);
     } catch (error) {
-      console.error("Chat error:", error);
+      console.error("Chat Error Detail:", error);
+      
       // Fallback to static logic if API fails
       const fallback = FAQS.find(f => f.keywords.some(k => userText.toLowerCase().includes(k)))?.answer 
         || "I'd love to help with that. Could you please call our 24/7 line at " + COMPANY_CONFIG.phone + " so one of our experts can assist you?";
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
       setChat(prev => [...prev, { role: 'ai', text: fallback }]);
     } finally {
       setIsTyping(false);
@@ -105,12 +112,13 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
         <button 
           onClick={() => setIsOpen(true)}
           className="w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform animate-float group"
+          aria-label="Open support chat"
         >
           <MessageCircle className="w-8 h-8 group-hover:scale-110 transition-transform" />
           <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold">1</div>
         </button>
       ) : (
-        <div className="w-[400px] max-w-[calc(100vw-32px)] h-[600px] bg-white rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden border border-slate-100 animate-in slide-in-from-bottom-8 duration-500 cubic-bezier(0.4, 0, 0.2, 1)">
+        <div className="w-[400px] max-w-[calc(100vw-32px)] h-[600px] bg-white rounded-[40px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] flex flex-col overflow-hidden border border-slate-100 animate-in slide-in-from-bottom-8 duration-500">
           {/* Header */}
           <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -130,6 +138,7 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
             <button 
               onClick={() => setIsOpen(false)} 
               className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all active:scale-90"
+              aria-label="Close chat"
             >
               <X className="w-5 h-5" />
             </button>
@@ -143,7 +152,7 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
           >
             {chat.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                <div className={`max-w-[85%] p-4 rounded-[24px] text-sm leading-relaxed shadow-sm ${
+                <div className={`max-w-[85%] p-4 rounded-[24px] text-sm font-medium leading-relaxed shadow-sm ${
                   msg.role === 'user' 
                     ? 'bg-blue-600 text-white rounded-tr-none' 
                     : 'bg-white text-slate-700 rounded-tl-none border border-slate-100'
@@ -194,15 +203,17 @@ const AIChatWidget: React.FC<AIChatWidgetProps> = ({ isOpen, setIsOpen }) => {
               <input 
                 type="text" 
                 placeholder="Ask about repairs or $10,500 rebates..."
-                className="w-full bg-slate-100 border-none rounded-[20px] pl-6 pr-16 py-4 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
+                className="w-full bg-slate-100 border-none rounded-[20px] pl-6 pr-16 py-4 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400 text-slate-900"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 disabled={isTyping}
+                aria-label="Message assistant"
               />
               <button 
                 type="submit"
                 disabled={!message.trim() || isTyping}
                 className="absolute right-2 top-2 w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 transition-all disabled:opacity-0 disabled:scale-90 shadow-lg shadow-blue-200"
+                aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
               </button>
