@@ -39,11 +39,11 @@ const ContactForm: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-slate-50">
+    <section id="contact" className="py-24 bg-slate-50" aria-labelledby="contact-heading">
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-blue-600 font-bold uppercase tracking-wider mb-4">Contact Us</h2>
+            <h2 id="contact-heading" className="text-blue-600 font-bold uppercase tracking-wider mb-4">Contact Us</h2>
             <h3 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6">
               Ready to Upgrade Your Comfort?
             </h3>
@@ -53,29 +53,29 @@ const ContactForm: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0" aria-hidden="true">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Call Us 24/7</p>
-                  <a href={`tel:${COMPANY_CONFIG.phone}`} className="text-lg font-bold text-slate-900 hover:text-blue-600">
+                  <a href={`tel:${COMPANY_CONFIG.phone}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Call us at ${COMPANY_CONFIG.phone}`}>
                     {COMPANY_CONFIG.phone}
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0" aria-hidden="true">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 font-bold uppercase mb-1">Email Us</p>
-                  <a href={`mailto:${COMPANY_CONFIG.email}`} className="text-lg font-bold text-slate-900 hover:text-blue-600">
+                  <a href={`mailto:${COMPANY_CONFIG.email}`} className="text-lg font-bold text-slate-900 hover:text-blue-600" aria-label={`Email us at ${COMPANY_CONFIG.email}`}>
                     {COMPANY_CONFIG.email}
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0" aria-hidden="true">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
@@ -84,7 +84,7 @@ const ContactForm: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0">
+                <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 shrink-0" aria-hidden="true">
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
@@ -103,15 +103,15 @@ const ContactForm: React.FC = () => {
                 style={{ border: 0 }} 
                 allowFullScreen={true} 
                 loading="lazy"
-                title="Google Maps Location"
+                title="Ontario Heating & Cooling Location Map"
               ></iframe>
             </div>
           </div>
 
-          <div className="glass p-10 rounded-[40px] shadow-2xl border border-white">
+          <div className="glass p-10 rounded-[40px] shadow-2xl border border-white" aria-live="polite">
             {status === 'success' ? (
-              <div className="h-full flex flex-col items-center justify-center text-center py-20 space-y-6">
-                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+              <div className="h-full flex flex-col items-center justify-center text-center py-20 space-y-6" role="status">
+                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6" aria-hidden="true">
                   <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
@@ -121,49 +121,65 @@ const ContactForm: React.FC = () => {
                 <button 
                   onClick={() => setStatus('idle')}
                   className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold"
+                  aria-label="Send another quote request"
                 >
                   Send Another Message
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form 
+                onSubmit={handleSubmit} 
+                className="space-y-6" 
+                aria-busy={status === 'submitting'}
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
+                    <label htmlFor="contact-name" className="block text-sm font-bold text-slate-700 mb-2">Full Name</label>
                     <input 
+                      id="contact-name"
                       type="text" 
                       name="name"
                       required
                       placeholder="Jane Doe"
+                      autoComplete="name"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
+                    <label htmlFor="contact-phone" className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
                     <input 
+                      id="contact-phone"
                       type="tel" 
                       name="phone"
                       required
                       placeholder="416-555-0123"
+                      autoComplete="tel"
                       className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+                  <label htmlFor="contact-email" className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
                   <input 
+                    id="contact-email"
                     type="email" 
                     name="email"
                     required
                     placeholder="jane@example.com"
+                    autoComplete="email"
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Service Needed</label>
-                  <select name="service" className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                  <label htmlFor="contact-service" className="block text-sm font-bold text-slate-700 mb-2">Service Needed</label>
+                  <select 
+                    id="contact-service"
+                    name="service" 
+                    className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                    aria-label="Select the HVAC service you require"
+                  >
                     <option value="heat-pump">Heat Pump Installation</option>
                     <option value="furnace-repair">Furnace Repair</option>
                     <option value="ac-install">AC Installation</option>
@@ -173,12 +189,14 @@ const ContactForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">How can we help?</label>
+                  <label htmlFor="contact-message" className="block text-sm font-bold text-slate-700 mb-2">How can we help?</label>
                   <textarea 
+                    id="contact-message"
                     name="message"
                     rows={4}
                     placeholder="Describe your needs..."
                     className="w-full px-5 py-4 rounded-2xl bg-white border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                    aria-label="Your message or inquiry"
                   ></textarea>
                 </div>
 
@@ -189,13 +207,13 @@ const ContactForm: React.FC = () => {
                 >
                   {status === 'submitting' ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Processing...
+                      <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
+                      <span>Processing Request...</span>
                     </>
                   ) : (
                     <>
-                      Request Free Quote
-                      <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      <span>Request Free Quote</span>
+                      <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" aria-hidden="true" />
                     </>
                   )}
                 </button>
