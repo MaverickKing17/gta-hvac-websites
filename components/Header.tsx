@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X, Phone, Calendar, ChevronRight } from 'lucide-react';
 import { COMPANY_CONFIG } from '../constants';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onOpenBooking: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onOpenBooking }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -81,7 +85,10 @@ const Header: React.FC = () => {
               <Phone className={isScrolled ? 'w-4 h-4' : 'w-5 h-5'} />
               {COMPANY_CONFIG.phone}
             </a>
-            <button className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all active:scale-95 group">
+            <button 
+              onClick={onOpenBooking}
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all active:scale-95 group"
+            >
               Book Online
               <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -139,7 +146,13 @@ const Header: React.FC = () => {
                 {COMPANY_CONFIG.phone}
               </a>
             </div>
-            <button className="w-full flex items-center justify-center gap-3 py-5 bg-slate-900 text-white rounded-[24px] font-bold text-lg shadow-xl shadow-slate-200">
+            <button 
+              onClick={() => {
+                setIsMenuOpen(false);
+                onOpenBooking();
+              }}
+              className="w-full flex items-center justify-center gap-3 py-5 bg-slate-900 text-white rounded-[24px] font-bold text-lg shadow-xl shadow-slate-200"
+            >
               <Calendar className="w-6 h-6" />
               Schedule Visit
             </button>
